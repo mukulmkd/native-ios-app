@@ -1,57 +1,63 @@
 import UIKit
+import React
 
 class CartViewController: UIViewController {
-
+    
+    var reactRootView: RCTRootView?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Cart (RN)"
-        view.backgroundColor = .systemBackground
-        setupPlaceholder()
+        loadReactNativeModule()
     }
-
-    private func setupPlaceholder() {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.alignment = .center
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
-
-        let iconLabel = UILabel()
-        iconLabel.text = "🛒"
-        iconLabel.font = .systemFont(ofSize: 64)
-        iconLabel.textAlignment = .center
-
-        let titleLabel = UILabel()
-        titleLabel.text = "Cart Module"
-        titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
-        titleLabel.textAlignment = .center
-
-        let subtitleLabel = UILabel()
-        subtitleLabel.text = "React Native module will be integrated here"
-        subtitleLabel.font = .systemFont(ofSize: 16, weight: .regular)
-        subtitleLabel.textColor = .secondaryLabel
-        subtitleLabel.textAlignment = .center
-        subtitleLabel.numberOfLines = 0
-
-        let descriptionLabel = UILabel()
-        descriptionLabel.text = "This placeholder will be replaced with the React Native module from Verdaccio."
-        descriptionLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        descriptionLabel.textColor = .tertiaryLabel
-        descriptionLabel.textAlignment = .center
-        descriptionLabel.numberOfLines = 0
-
-        stackView.addArrangedSubview(iconLabel)
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(subtitleLabel)
-        stackView.addArrangedSubview(descriptionLabel)
-
+    
+    private func loadReactNativeModule() {
+        // Get the shared bridge from AppDelegate
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let bridge = appDelegate.bridge else {
+            print("⚠️ React Native bridge not initialized")
+            setupFallbackView()
+            return
+        }
+        
+        // Create React Native root view with ModuleCart
+        let rootView = RCTRootView(
+            bridge: bridge,
+            moduleName: "ModuleCart",
+            initialProperties: nil
+        )
+        
+        rootView.backgroundColor = .systemBackground
+        rootView.frame = view.bounds
+        rootView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        view.addSubview(rootView)
+        self.reactRootView = rootView
+    }
+    
+    private func setupFallbackView() {
+        view.backgroundColor = .systemBackground
+        
+        let label = UILabel()
+        label.text = "Loading Cart Module..."
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Cleanup if needed
+    }
+    
+    deinit {
+        reactRootView?.removeFromSuperview()
+        reactRootView = nil
     }
 }
 

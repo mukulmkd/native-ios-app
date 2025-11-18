@@ -1,24 +1,10 @@
 import { AppRegistry } from "react-native";
 
-// Import Products module from Verdaccio - this auto-registers "ModuleProducts"
-import "@app/module-products";
+// Import modules to trigger their AppRegistry registration
+import "@app/module-products"; // Registers "ModuleProducts"
+import "@app/module-cart";     // Registers "ModuleCart"
+import "@app/module-pdp";      // Registers "ModulePDP"
 
-// Placeholder registrations for other modules (will be integrated later)
-AppRegistry.registerComponent("ModuleCart", () => {
-  const { View, Text } = require("react-native");
-  return () => (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Cart Module - Coming from Verdaccio</Text>
-    </View>
-  );
-});
-
-AppRegistry.registerComponent("ModulePDP", () => {
-  const { View, Text } = require("react-native");
-  return () => (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>PDP Module - Coming from Verdaccio</Text>
-    </View>
-  );
-});
+// Each module package already registers itself with AppRegistry
+// We just need to ensure they're imported so the registration happens
 

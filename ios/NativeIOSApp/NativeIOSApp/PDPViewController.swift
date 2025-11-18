@@ -1,8 +1,10 @@
 import UIKit
+import React
 
 class PDPViewController: UIViewController {
 
     private let productId: String
+    var reactRootView: RCTRootView?
 
     init(productId: String) {
         self.productId = productId
@@ -16,60 +18,75 @@ class PDPViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "PDP (RN)"
-        view.backgroundColor = .systemBackground
-        setupPlaceholder()
+        loadReactNativeModule()
     }
-
-    private func setupPlaceholder() {
+    
+    private func loadReactNativeModule() {
+        // Get the shared bridge from AppDelegate
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let bridge = appDelegate.bridge else {
+            print("⚠️ React Native bridge not initialized")
+            setupFallbackView()
+            return
+        }
+        
+        // Prepare initial properties for the React Native module
+        let initialProperties: [String: Any] = [
+            "productId": productId
+        ]
+        
+        // Create React Native root view with ModulePDP
+        let rootView = RCTRootView(
+            bridge: bridge,
+            moduleName: "ModulePDP",
+            initialProperties: initialProperties
+        )
+        
+        rootView.backgroundColor = .systemBackground
+        rootView.frame = view.bounds
+        rootView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        view.addSubview(rootView)
+        self.reactRootView = rootView
+    }
+    
+    private func setupFallbackView() {
+        view.backgroundColor = .systemBackground
+        
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
-
-        let iconLabel = UILabel()
-        iconLabel.text = "📦"
-        iconLabel.font = .systemFont(ofSize: 64)
-        iconLabel.textAlignment = .center
-
-        let titleLabel = UILabel()
-        titleLabel.text = "Product Detail Module"
-        titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
-        titleLabel.textAlignment = .center
-
+        
+        let label = UILabel()
+        label.text = "Loading PDP Module..."
+        label.textAlignment = .center
+        
         let productIdLabel = UILabel()
         productIdLabel.text = "Product ID: \(productId)"
         productIdLabel.font = .systemFont(ofSize: 16, weight: .medium)
         productIdLabel.textColor = .systemBlue
         productIdLabel.textAlignment = .center
-
-        let subtitleLabel = UILabel()
-        subtitleLabel.text = "React Native module will be integrated here"
-        subtitleLabel.font = .systemFont(ofSize: 16, weight: .regular)
-        subtitleLabel.textColor = .secondaryLabel
-        subtitleLabel.textAlignment = .center
-        subtitleLabel.numberOfLines = 0
-
-        let descriptionLabel = UILabel()
-        descriptionLabel.text = "This placeholder will be replaced with the React Native module from Verdaccio."
-        descriptionLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        descriptionLabel.textColor = .tertiaryLabel
-        descriptionLabel.textAlignment = .center
-        descriptionLabel.numberOfLines = 0
-
-        stackView.addArrangedSubview(iconLabel)
-        stackView.addArrangedSubview(titleLabel)
+        
+        stackView.addArrangedSubview(label)
         stackView.addArrangedSubview(productIdLabel)
-        stackView.addArrangedSubview(subtitleLabel)
-        stackView.addArrangedSubview(descriptionLabel)
-
+        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Cleanup if needed
+    }
+    
+    deinit {
+        reactRootView?.removeFromSuperview()
+        reactRootView = nil
     }
 }
 
