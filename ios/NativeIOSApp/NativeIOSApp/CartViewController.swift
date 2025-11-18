@@ -28,11 +28,18 @@ class CartViewController: UIViewController {
         )
         
         rootView.backgroundColor = .systemBackground
-        rootView.frame = view.bounds
-        rootView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        rootView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(rootView)
         self.reactRootView = rootView
+        
+        // Use safe area layout guide to respect safe area insets
+        NSLayoutConstraint.activate([
+            rootView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            rootView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            rootView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            rootView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
     }
     
     private func setupFallbackView() {

@@ -70,7 +70,9 @@ fi
 echo ""
 echo "${GREEN}Step 3/5: Fixing Hermes headers${NC}"
 if [ -f "$PROJECT_ROOT/js/scripts/fix-hermes-headers.sh" ]; then
-  bash "$PROJECT_ROOT/js/scripts/fix-hermes-headers.sh" || echo "${YELLOW}⚠️  Warning: Hermes header fix script failed (this is OK if headers are already fixed)${NC}"
+  cd "$PROJECT_ROOT/js"
+  bash scripts/fix-hermes-headers.sh || echo "${YELLOW}⚠️  Warning: Hermes header fix script failed (this is OK if headers are already fixed)${NC}"
+  cd "$PROJECT_ROOT"
 else
   echo "${YELLOW}⚠️  Warning: fix-hermes-headers.sh not found${NC}"
 fi
