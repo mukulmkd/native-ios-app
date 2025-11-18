@@ -1,0 +1,17 @@
+{
+  "name": "native-ios-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Native iOS app consuming React Native modules from Verdaccio",
+  "scripts": {
+    "postinstall": "bash scripts/postinstall.sh",
+    "setup": "bash scripts/postinstall.sh",
+    "ios:install": "cd ios && pod install && cd ..",
+    "ios:bundle": "cd js && npm run bundle",
+    "ios:clean": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd .."
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

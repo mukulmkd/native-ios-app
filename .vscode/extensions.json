@@ -1,0 +1,12 @@
+{
+  "recommendations": [],
+  "unwantedRecommendations": [
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced",
+    "bierner.markdown-preview-github-styles",
+    "bierner.markdown-emoji",
+    "bierner.markdown-mermaid",
+    "bierner.markdown-footnotes"
+  ]
+}
+

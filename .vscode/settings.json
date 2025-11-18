@@ -1,0 +1,42 @@
+{
+  "files.associations": {
+    "README.md": "plaintext",
+    "*.md": "plaintext"
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/ios/Pods/**": true,
+    "**/ios/build/**": true,
+    "**/.git/**": true,
+    "**/ios/**/xcuserdata/**": true,
+    "**/ios/**/DerivedData/**": true
+  },
+  "[plaintext]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
+    "editor.suggest.showWords": false,
+    "editor.semanticHighlighting.enabled": false
+  },
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggest.enabled": false,
+  "editor.hover.enabled": false,
+  "editor.lightbulb.enabled": "off",
+  "files.exclude": {},
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/ios/Pods": true,
+    "**/ios/build": true
+  },
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "javascript.disableAutomaticTypeAcquisition": true
+}
