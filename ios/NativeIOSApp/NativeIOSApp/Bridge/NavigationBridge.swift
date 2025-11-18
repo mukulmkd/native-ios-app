@@ -38,8 +38,21 @@ class NavigationBridge: NSObject, RCTBridgeModule {
                 return
             }
             
-            let cartVC = CartViewController()
-            navigationController.pushViewController(cartVC, animated: true)
+            // Check if CartViewController is already the top view controller
+            if let topVC = navigationController.topViewController as? CartViewController {
+                // Already on Cart screen, do nothing
+                return
+            }
+            
+            // Check if CartViewController is already in the stack
+            if let cartVC = navigationController.viewControllers.first(where: { $0 is CartViewController }) {
+                // Pop to existing CartViewController
+                navigationController.popToViewController(cartVC, animated: true)
+            } else {
+                // Push new CartViewController
+                let cartVC = CartViewController()
+                navigationController.pushViewController(cartVC, animated: true)
+            }
         }
     }
     

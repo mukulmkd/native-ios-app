@@ -41,8 +41,14 @@ Follow these steps **in order**:
 **Before starting**, ensure:
 - ✅ Monorepo is cloned and dependencies installed
 - ✅ Verdaccio is running on `http://localhost:4873`
-- ✅ Packages are published to Verdaccio (`npm run verdaccio:publish-all` in monorepo)
-- ✅ You're logged into Verdaccio (`npm adduser --registry http://localhost:4873`)
+  - Check: `curl http://localhost:4873` should return HTML
+  - If not running: `cd monorepo && npm run verdaccio:start`
+- ✅ Packages are published to Verdaccio
+  - Run in monorepo: `npm run verdaccio:publish-all`
+  - Verify: `npm view @app/module-products --registry http://localhost:4873` should show version 0.1.8
+- ✅ You're logged into Verdaccio
+  - Check: `npm whoami --registry http://localhost:4873`
+  - If not logged in: `npm adduser --registry http://localhost:4873` (use any username/password)
 
 **Test Verdaccio is accessible:**
 ```bash
@@ -54,26 +60,39 @@ If you see HTML output, Verdaccio is running. If not, go back to monorepo setup.
 #### Step 2: Clone and Navigate
 
 ```bash
-# Clone the repository
+# Clone the repository (replace <repository-url> with actual URL)
 git clone <repository-url>
 cd native-ios-app
+
+# Or if you already have the repository, just navigate to it
+cd /path/to/native-ios-app
 ```
 
 #### Step 3: Configure npm for Verdaccio
 
 ```bash
 # Create .npmrc in the project root (if it doesn't exist)
-cat > .npmrc << EOF
+if [ ! -f .npmrc ]; then
+  cat > .npmrc << EOF
 @app:registry=http://localhost:4873
 @pkg:registry=http://localhost:4873
 EOF
+  echo "✅ Created .npmrc in project root"
+else
+  echo "✅ .npmrc already exists in project root"
+fi
 
-# Also configure in js/ directory
+# Also configure in js/ directory (required for npm install)
 cd js
-cat > .npmrc << EOF
+if [ ! -f .npmrc ]; then
+  cat > .npmrc << EOF
 @app:registry=http://localhost:4873
 @pkg:registry=http://localhost:4873
 EOF
+  echo "✅ Created .npmrc in js/ directory"
+else
+  echo "✅ .npmrc already exists in js/ directory"
+fi
 cd ..
 ```
 
@@ -92,24 +111,46 @@ npm install
 - ✅ Bundle JavaScript for iOS
 - ✅ Add bundle to Xcode project
 
-**Expected output**: You should see progress through each step. The process may take 5-10 minutes on first run.
+**Expected output**: You should see progress through each step:
+- ✅ Step 1/5: Creating .xcode.env file
+- ✅ Step 2/5: Installing JavaScript dependencies (may take 2-3 minutes)
+- ✅ Step 3/5: Fixing Hermes headers
+- ✅ Step 4/5: Installing CocoaPods dependencies (may take 3-5 minutes)
+- ✅ Step 5/5: Bundling JavaScript for iOS
+- ✅ Step 6/6: Adding bundle to Xcode project
+
+**Total time**: The process may take 5-10 minutes on first run, depending on your internet connection and machine speed.
 
 **⚠️ If you see errors about packages not found:**
 - Verify Verdaccio is running: `curl http://localhost:4873`
 - Verify packages are published: `npm view @app/module-products --registry http://localhost:4873`
-- Check `.npmrc` files exist and are correct
+- Check `.npmrc` files exist in both project root and `js/` directory
+- Verify you're logged into Verdaccio: `npm whoami --registry http://localhost:4873`
+- If not logged in: `npm adduser --registry http://localhost:4873` (use any username/password)
 
 #### Step 5: Verify Setup
 
 ```bash
-# Check that bundle was created
+# Check that bundle was created (should be ~1.2MB)
 ls -lh ios/NativeIOSApp/NativeIOSApp/main.jsbundle
 
 # Check that CocoaPods installed
 ls -d ios/Pods
+
+# Check that .xcode.env exists
+ls ios/.xcode.env
+
+# Check that modules are installed
+ls js/node_modules/@app/module-products
 ```
 
-Both should exist. If not, see [Manual Setup](#manual-setup-if-postinstall-fails) below.
+**Expected results:**
+- ✅ Bundle file exists and is ~1.2MB
+- ✅ `ios/Pods` directory exists
+- ✅ `ios/.xcode.env` file exists
+- ✅ `js/node_modules/@app/module-products` directory exists
+
+If any of these are missing, see [Manual Setup](#manual-setup-if-postinstall-fails) below or [Troubleshooting](#troubleshooting).
 
 #### Step 6: Open in Xcode
 
@@ -138,9 +179,21 @@ open ios/NativeIOSApp.xcworkspace
 
 **⚠️ First build may take 5-10 minutes** as Xcode compiles React Native and dependencies.
 
+**Common first-build issues:**
+- If you see "Cannot find module" errors: Make sure the bundle was created (`ls ios/NativeIOSApp/NativeIOSApp/main.jsbundle`)
+- If you see "Sandbox" errors: The postinstall script should have fixed this, but if not, see [Troubleshooting](#troubleshooting)
+- If you see "Hermes" errors: Make sure `.xcode.env` exists in `ios/` directory
+
 ### ✅ Setup Complete!
 
 Your native iOS app is now ready for development.
+
+**Quick Verification Checklist:**
+- ✅ Bundle file exists: `ls -lh ios/NativeIOSApp/NativeIOSApp/main.jsbundle` (should be ~1.2MB)
+- ✅ CocoaPods installed: `ls -d ios/Pods` (should exist)
+- ✅ .xcode.env exists: `ls ios/.xcode.env` (should exist)
+- ✅ .npmrc files exist: `ls -la .npmrc js/.npmrc` (both should exist)
+- ✅ Modules installed: `ls js/node_modules/@app/module-products` (should exist)
 
 **Next Steps:**
 - See [Daily Development](#daily-development-workflow) section below for daily workflows
@@ -155,13 +208,20 @@ Your native iOS app is now ready for development.
 3. **Update dependencies** in this project:
    ```bash
    cd js
-   npm install @app/module-products@latest --legacy-peer-deps
+   npm install @app/module-products@latest @app/module-cart@latest @app/module-pdp@latest --legacy-peer-deps
    ```
 4. **Rebundle**:
    ```bash
    npm run bundle
    ```
 5. **Rebuild in Xcode** (⌘B)
+
+### Current Module Versions
+
+- `@app/module-products@^0.1.8` - Products listing module
+- `@app/module-cart@^0.1.8` - Shopping cart module
+- `@app/module-pdp@^0.1.8` - Product detail page module
+- `@pkg/state@^0.1.5` - Redux state management with persistence
 
 ### Quick Commands
 
@@ -183,13 +243,37 @@ cd js && npm run bundle && cd ..
 If the automatic setup doesn't work, you can run it manually:
 
 ```bash
-# Run the setup script
+# Option 1: Run the setup script directly
 npm run setup
 
-# Or step by step:
+# Option 2: Step by step (if script fails)
+# 1. Create .npmrc files (if missing)
+cat > .npmrc << EOF
+@app:registry=http://localhost:4873
+@pkg:registry=http://localhost:4873
+EOF
+cat > js/.npmrc << EOF
+@app:registry=http://localhost:4873
+@pkg:registry=http://localhost:4873
+EOF
+
+# 2. Create .xcode.env
+echo "export NODE_BINARY=$(command -v node)" > ios/.xcode.env
+
+# 3. Install JavaScript dependencies
 cd js && npm install --legacy-peer-deps && cd ..
+
+# 4. Fix Hermes headers
+cd js && bash scripts/fix-hermes-headers.sh && cd ..
+
+# 5. Install CocoaPods
 cd ios && pod install && cd ..
+
+# 6. Bundle JavaScript
 cd js && npm run bundle && cd ..
+
+# 7. Add bundle to Xcode (if automatic script failed)
+python3 scripts/add-bundle-to-xcode.py
 ```
 
 ## Troubleshooting
@@ -222,11 +306,54 @@ If you encounter build errors:
 
 ### Sandbox Errors
 
-If you see sandbox permission errors, the postinstall script should have fixed this automatically. If not:
+If you see sandbox permission errors (e.g., "Sandbox: rsync(...) deny(1) file-read-data"), the postinstall script should have fixed this automatically. If not:
 
-1. Check that `ENABLE_USER_SCRIPT_SANDBOXING = NO` in the Xcode project settings
-2. Restart Xcode completely
-3. Clean and rebuild
+1. Open `ios/NativeIOSApp/NativeIOSApp.xcodeproj/project.pbxproj` in a text editor
+2. Search for `ENABLE_USER_SCRIPT_SANDBOXING` and set it to `NO` for both Debug and Release configurations
+3. Restart Xcode completely
+4. Clean and rebuild: Product → Clean Build Folder (⇧⌘K), then rebuild
+
+### Module Not Found Errors
+
+If you see "Unable to resolve module @app/module-products" or similar:
+
+1. **Verify Verdaccio is running**: `curl http://localhost:4873`
+2. **Check .npmrc files exist**:
+   ```bash
+   ls -la .npmrc js/.npmrc
+   ```
+3. **Verify packages are published**:
+   ```bash
+   npm view @app/module-products --registry http://localhost:4873
+   ```
+4. **Reinstall dependencies**:
+   ```bash
+   cd js && rm -rf node_modules package-lock.json && npm install --legacy-peer-deps && cd ..
+   ```
+5. **Rebundle**:
+   ```bash
+   cd js && npm run bundle && cd ..
+   ```
+
+### Bundle Not Found
+
+If Xcode can't find `main.jsbundle`:
+
+1. **Check bundle exists**:
+   ```bash
+   ls -lh ios/NativeIOSApp/NativeIOSApp/main.jsbundle
+   ```
+2. **If missing, create it**:
+   ```bash
+   cd js && npm run bundle && cd ..
+   ```
+3. **Add to Xcode manually** (if automatic script failed):
+   - Right-click 'NativeIOSApp' folder in Xcode
+   - Select 'Add Files to NativeIOSApp...'
+   - Select `main.jsbundle`
+   - **UNCHECK** 'Copy items if needed'
+   - **CHECK** 'Create groups' and 'NativeIOSApp' target
+   - Click 'Add'
 
 ## Project Structure
 
