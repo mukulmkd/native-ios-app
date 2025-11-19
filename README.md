@@ -39,6 +39,7 @@ Follow these steps **in order**:
 #### Step 1: Verify Monorepo is Ready
 
 **Before starting**, ensure:
+
 - ✅ Monorepo is cloned and dependencies installed
 - ✅ Verdaccio is running on `http://localhost:4873`
   - Check: `curl http://localhost:4873` should return HTML
@@ -51,6 +52,7 @@ Follow these steps **in order**:
   - If not logged in: `npm adduser --registry http://localhost:4873` (use any username/password)
 
 **Test Verdaccio is accessible:**
+
 ```bash
 curl http://localhost:4873
 ```
@@ -104,6 +106,7 @@ npm install
 ```
 
 **The `postinstall` script will automatically:**
+
 - ✅ Create `.xcode.env` file with Node.js path
 - ✅ Install JavaScript dependencies in `js/` directory (from Verdaccio)
 - ✅ Fix Hermes headers
@@ -112,6 +115,7 @@ npm install
 - ✅ Add bundle to Xcode project
 
 **Expected output**: You should see progress through each step:
+
 - ✅ Step 1/5: Creating .xcode.env file
 - ✅ Step 2/5: Installing JavaScript dependencies (may take 2-3 minutes)
 - ✅ Step 3/5: Fixing Hermes headers
@@ -122,6 +126,7 @@ npm install
 **Total time**: The process may take 5-10 minutes on first run, depending on your internet connection and machine speed.
 
 **⚠️ If you see errors about packages not found:**
+
 - Verify Verdaccio is running: `curl http://localhost:4873`
 - Verify packages are published: `npm view @app/module-products --registry http://localhost:4873`
 - Check `.npmrc` files exist in both project root and `js/` directory
@@ -145,6 +150,7 @@ ls js/node_modules/@app/module-products
 ```
 
 **Expected results:**
+
 - ✅ Bundle file exists and is ~1.2MB
 - ✅ `ios/Pods` directory exists
 - ✅ `ios/.xcode.env` file exists
@@ -163,15 +169,17 @@ open ios/NativeIOSApp.xcworkspace
 
 #### Step 7: Build and Run
 
-1. **Select Scheme**: 
+1. **Select Scheme**:
+
    - Click the scheme dropdown (next to the Play button)
    - Select "NativeIOSApp"
 
-2. **Select Simulator**: 
+2. **Select Simulator**:
+
    - Next to the scheme dropdown
    - Select an iPhone simulator (e.g., "iPhone 15 Pro")
 
-3. **Build and Run**: 
+3. **Build and Run**:
    - Click Play button (▶️) or press `⌘B` to build
    - Press `⌘R` to build and run
 
@@ -180,6 +188,7 @@ open ios/NativeIOSApp.xcworkspace
 **⚠️ First build may take 5-10 minutes** as Xcode compiles React Native and dependencies.
 
 **Common first-build issues:**
+
 - If you see "Cannot find module" errors: Make sure the bundle was created (`ls ios/NativeIOSApp/NativeIOSApp/main.jsbundle`)
 - If you see "Sandbox" errors: The postinstall script should have fixed this, but if not, see [Troubleshooting](#troubleshooting)
 - If you see "Hermes" errors: Make sure `.xcode.env` exists in `ios/` directory
@@ -189,6 +198,7 @@ open ios/NativeIOSApp.xcworkspace
 Your native iOS app is now ready for development.
 
 **Quick Verification Checklist:**
+
 - ✅ Bundle file exists: `ls -lh ios/NativeIOSApp/NativeIOSApp/main.jsbundle` (should be ~1.2MB)
 - ✅ CocoaPods installed: `ls -d ios/Pods` (should exist)
 - ✅ .xcode.env exists: `ls ios/.xcode.env` (should exist)
@@ -196,6 +206,7 @@ Your native iOS app is now ready for development.
 - ✅ Modules installed: `ls js/node_modules/@app/module-products` (should exist)
 
 **Next Steps:**
+
 - See [Daily Development](#daily-development-workflow) section below for daily workflows
 - See [Troubleshooting](#troubleshooting) if you encounter issues
 
@@ -295,7 +306,7 @@ sudo gem install cocoapods
 If you encounter build errors:
 
 1. **Clean Build Folder**: In Xcode, Product → Clean Build Folder (⇧⌘K)
-2. **Delete DerivedData**: 
+2. **Delete DerivedData**:
    ```bash
    rm -rf ~/Library/Developer/Xcode/DerivedData/NativeIOSApp-*
    ```
@@ -395,6 +406,7 @@ This project uses **CocoaPods** for dependency management instead of Swift Packa
 #### For React Native Projects: CocoaPods is the Standard
 
 **Current State:**
+
 - ✅ React Native 0.81.5 has minimal SPM support (experimental only)
 - ✅ Most React Native libraries (including `@react-native-async-storage/async-storage`) don't have SPM packages
 - ✅ The `use_react_native!` helper is CocoaPods-specific
@@ -402,6 +414,7 @@ This project uses **CocoaPods** for dependency management instead of Swift Packa
 - ✅ CocoaPods is the battle-tested, production-ready solution for React Native
 
 **Challenges with SPM Migration:**
+
 1. **React Native Core**: The `use_react_native!` helper and build scripts are CocoaPods-specific
 2. **Third-Party Libraries**: Most React Native libraries don't provide SPM packages
 3. **Build System**: Post-install hooks and build settings are CocoaPods-based
@@ -409,22 +422,23 @@ This project uses **CocoaPods** for dependency management instead of Swift Packa
 
 ### Comparison Table
 
-| Feature | Swift Package Manager | CocoaPods |
-|---------|----------------------|-----------|
-| Native to Xcode | ✅ Yes | ❌ No (external) |
-| React Native support | ⚠️ Experimental | ✅ Full support |
-| Ecosystem size | ⚠️ Growing | ✅ Very large |
-| Build speed | ✅ Faster | ⚠️ Slower |
-| Setup complexity | ✅ Simple | ⚠️ Requires Ruby |
-| Workspace file | ✅ Not needed | ❌ Required |
-| Apple's direction | ✅ Recommended | ⚠️ Legacy |
-| Maturity | ⚠️ Newer | ✅ Very mature |
-| Customization | ⚠️ Limited | ✅ Very flexible |
-| Learning curve | ✅ Easier | ⚠️ Steeper |
+| Feature              | Swift Package Manager | CocoaPods        |
+| -------------------- | --------------------- | ---------------- |
+| Native to Xcode      | ✅ Yes                | ❌ No (external) |
+| React Native support | ⚠️ Experimental       | ✅ Full support  |
+| Ecosystem size       | ⚠️ Growing            | ✅ Very large    |
+| Build speed          | ✅ Faster             | ⚠️ Slower        |
+| Setup complexity     | ✅ Simple             | ⚠️ Requires Ruby |
+| Workspace file       | ✅ Not needed         | ❌ Required      |
+| Apple's direction    | ✅ Recommended        | ⚠️ Legacy        |
+| Maturity             | ⚠️ Newer              | ✅ Very mature   |
+| Customization        | ⚠️ Limited            | ✅ Very flexible |
+| Learning curve       | ✅ Easier             | ⚠️ Steeper       |
 
 ### When to Consider SPM
 
 Consider migrating to SPM when:
+
 - ✅ React Native adds full SPM support (likely 0.75+)
 - ✅ All your dependencies have SPM packages available
 - ✅ You're starting a new project from scratch
@@ -433,6 +447,7 @@ Consider migrating to SPM when:
 ### Recommendation
 
 **For React Native Projects (Current):** Stick with CocoaPods
+
 - It's the standard for React Native projects
 - All dependencies support it
 - Your current setup works well
@@ -440,12 +455,14 @@ Consider migrating to SPM when:
 - More stable and battle-tested
 
 **For Pure Native iOS Projects:** SPM is generally better
+
 - Native integration with Xcode
 - Faster builds
 - Apple's recommended approach
 - Simpler workflow
 
 **For the Future:** SPM will likely become the standard
+
 - Apple is investing heavily in SPM
 - React Native is working on better SPM support
 - The ecosystem is growing
