@@ -386,6 +386,78 @@ native-ios-app/
 - Most build warnings (200+) are normal for React Native projects
 - CA Event errors in console are harmless (Apple's internal metrics)
 
+## CocoaPods vs Swift Package Manager (SPM)
+
+### Why We Use CocoaPods
+
+This project uses **CocoaPods** for dependency management instead of Swift Package Manager (SPM). Here's why:
+
+#### For React Native Projects: CocoaPods is the Standard
+
+**Current State:**
+- ✅ React Native 0.81.5 has minimal SPM support (experimental only)
+- ✅ Most React Native libraries (including `@react-native-async-storage/async-storage`) don't have SPM packages
+- ✅ The `use_react_native!` helper is CocoaPods-specific
+- ✅ React Native build scripts and tooling are built around CocoaPods
+- ✅ CocoaPods is the battle-tested, production-ready solution for React Native
+
+**Challenges with SPM Migration:**
+1. **React Native Core**: The `use_react_native!` helper and build scripts are CocoaPods-specific
+2. **Third-Party Libraries**: Most React Native libraries don't provide SPM packages
+3. **Build System**: Post-install hooks and build settings are CocoaPods-based
+4. **Maturity**: SPM support in React Native is still experimental and incomplete
+
+### Comparison Table
+
+| Feature | Swift Package Manager | CocoaPods |
+|---------|----------------------|-----------|
+| Native to Xcode | ✅ Yes | ❌ No (external) |
+| React Native support | ⚠️ Experimental | ✅ Full support |
+| Ecosystem size | ⚠️ Growing | ✅ Very large |
+| Build speed | ✅ Faster | ⚠️ Slower |
+| Setup complexity | ✅ Simple | ⚠️ Requires Ruby |
+| Workspace file | ✅ Not needed | ❌ Required |
+| Apple's direction | ✅ Recommended | ⚠️ Legacy |
+| Maturity | ⚠️ Newer | ✅ Very mature |
+| Customization | ⚠️ Limited | ✅ Very flexible |
+| Learning curve | ✅ Easier | ⚠️ Steeper |
+
+### When to Consider SPM
+
+Consider migrating to SPM when:
+- ✅ React Native adds full SPM support (likely 0.75+)
+- ✅ All your dependencies have SPM packages available
+- ✅ You're starting a new project from scratch
+- ✅ You want to be on the cutting edge (with potential instability)
+
+### Recommendation
+
+**For React Native Projects (Current):** Stick with CocoaPods
+- It's the standard for React Native projects
+- All dependencies support it
+- Your current setup works well
+- Better community support and documentation
+- More stable and battle-tested
+
+**For Pure Native iOS Projects:** SPM is generally better
+- Native integration with Xcode
+- Faster builds
+- Apple's recommended approach
+- Simpler workflow
+
+**For the Future:** SPM will likely become the standard
+- Apple is investing heavily in SPM
+- React Native is working on better SPM support
+- The ecosystem is growing
+
+### Bottom Line
+
+- **For React Native:** CocoaPods is the practical choice today
+- **For Pure iOS:** SPM is generally better
+- **For the Future:** SPM is likely to become the standard
+
+Our current CocoaPods setup is the right choice for a React Native project. We'll revisit SPM when React Native support matures and all dependencies are available.
+
 ## Project Structure Details
 
 See `docs/PROJECT_STRUCTURE.md` for detailed information about the project layout and view controllers.
